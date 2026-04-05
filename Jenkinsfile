@@ -1,7 +1,5 @@
 pipeline {
-    agent {
-        label 'k8s-agent-1'
-    }
+    agent any
 
     triggers {
         githubPush()
