@@ -37,17 +37,15 @@ pipeline {
         stage('Deploy to Kubernetes') {
             steps {
                 script {
-                    echo "Applying Kubernetes Manifests..."
-                    // ตรวจสอบว่าไฟล์อยู่ในโฟลเดอร์ k8s หรือไม่ (ปรับ path ตามโครงสร้างจริง)
-                    // หากไฟล์อยู่ที่ root ให้เอา 'k8s/' ออก
-                    sh "kubectl apply -f deployment.yaml"
-                    sh "kubectl apply -f service.yaml"
-                    sh "kubectl apply -f ingress.yaml"
-                    sh "kubectl apply -f jenkins-pv.yaml"
-                    sh "kubectl apply -f jenkins-pvc.yaml"
+                    echo "Applying Kubernetes Manifests from jenkins folder..."
+                    // เติมชื่อโฟลเดอร์ 'jenkins/' นำหน้าไฟล์ YAML ทุกไฟล์
+                    sh "kubectl apply -f jenkins/deployment.yaml"
+                    sh "kubectl apply -f jenkins/service.yaml"
+                    sh "kubectl apply -f jenkins/ingress.yaml"
+                    sh "kubectl apply -f jenkins/pv.yaml"  // ในรูปคุณใช้ชื่อ pv.yaml
+                    sh "kubectl apply -f jenkins/pvc.yaml" // ในรูปคุณใช้ชื่อ pvc.yaml
 
                     echo "Updating Image to: ${APP_NAME}:${IMAGE_TAG}..."
-                    // อัปเดต Image ใน Deployment ให้เป็นเวอร์ชันล่าสุดที่เพิ่ง build
                     sh "kubectl set image deployment/${K8S_DEPLOY_NAME} ${K8S_CONTAINER_NAME}=${APP_NAME}:${IMAGE_TAG}"
                 }
             }
