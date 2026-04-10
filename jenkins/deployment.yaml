@@ -12,11 +12,21 @@ spec:
       labels:
         app: jenkins
     spec:
+      securityContext:
+        fsGroup: 1000  # แก้ปัญหา Permission ของ Volume
       containers:
       - name: jenkins
         image: jenkins/jenkins:lts
         ports:
         - containerPort: 8080
+        - containerPort: 50000 # สำหรับให้ Jenkins Agent เชื่อมต่อกลับมา
+        resources:
+          limits:
+            cpu: "1"
+            memory: "2Gi"
+          requests:
+            cpu: "500m"
+            memory: "1Gi"
         volumeMounts:
         - name: jenkins-storage
           mountPath: /var/jenkins_home

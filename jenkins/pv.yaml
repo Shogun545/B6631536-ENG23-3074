@@ -3,8 +3,9 @@ kind: PersistentVolume
 metadata:
   name: jenkins-pv
 spec:
+  storageClassName: manual # เพิ่มเพื่อให้ PVC เรียกใช้ได้เจาะจง
   capacity:
-    storage: 1Gi
+    storage: 5Gi # แนะนำเพิ่มเป็น 5Gi ขึ้นไป เพราะ Jenkins Plugins และ Build History กินพื้นที่เยอะครับ
   accessModes:
     - ReadWriteOnce
   hostPath:

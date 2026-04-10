@@ -7,6 +7,12 @@ spec:
   selector:
     app: jenkins
   ports:
-  - port: 8080
-    targetPort: 8080
-    nodePort: 30007
+    - name: http
+      port: 8080
+      targetPort: 8080
+      nodePort: 30007
+    - name: agent
+      port: 50000
+      targetPort: 50000
+      # nodePort สำหรับ agent ไม่จำเป็นต้องระบุก็ได้ 
+      # ให้ Kubernetes สุ่มให้ หรือจะระบุเป็น 30008 ก็ได้ครับ

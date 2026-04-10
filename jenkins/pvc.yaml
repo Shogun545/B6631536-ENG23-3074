@@ -3,8 +3,9 @@ kind: PersistentVolumeClaim
 metadata:
   name: jenkins-pvc
 spec:
+  storageClassName: manual # เพิ่มเพื่อให้ไปจับคู่กับ PV ที่เป็น manual เหมือนกัน
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 1Gi
+      storage: 1Gi # หรือปรับเป็น 5Gi ตามความเหมาะสม

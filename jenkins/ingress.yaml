@@ -2,6 +2,9 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: jenkins-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: "50m" # เพิ่มขนาดการอัปโหลดไฟล์
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "600" # ป้องกัน Timeout เวลา Jenkins ทำงานนานๆ
 spec:
   ingressClassName: nginx
   rules:
@@ -12,6 +15,6 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: jenkins-service
+            name: jenkins-service # <--- ต้องตรงกับชื่อในไฟล์ Service
             port:
               number: 8080
