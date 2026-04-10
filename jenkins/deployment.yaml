@@ -13,12 +13,11 @@ spec:
         app: jenkins
     spec:
       securityContext:
-        fsGroup: 1000
+        runAsUser: 0 # ต้องเป็น root เพื่อคุยกับ docker.sock ได้
         
-      # --- InitContainer ---
       initContainers:
       - name: fix-permissions
-        image: nginx:alpine  # <--- เปลี่ยนจาก busybox เป็น nginx:alpine
+        image: nginx:alpine
         command: ["sh", "-c", "chown -R 1000:1000 /var/jenkins_home"]
         volumeMounts:
         - name: jenkins-storage
@@ -30,18 +29,16 @@ spec:
         ports:
         - containerPort: 8080
         - containerPort: 50000
-        # (แนะนำ) กำหนด Resource ป้องกัน Jenkins กิน RAM เครื่องหมด
-        resources:
-          limits:
-            cpu: "1"
-            memory: "2Gi"
-          requests:
-            cpu: "500m"
-            memory: "1Gi"
         volumeMounts:
         - name: jenkins-storage
           mountPath: /var/jenkins_home
+        - name: docker-sock
+          mountPath: /var/run/docker.sock
+      
       volumes:
       - name: jenkins-storage
         persistentVolumeClaim:
           claimName: jenkins-pvc
+      - name: docker-sock
+        hostPath:
+          path: /var/run/docker.sock # สำหรับ Docker Desktop บน Windows/Linux

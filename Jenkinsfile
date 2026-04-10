@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    tools {
+        docker 'docker' 
+    }
+
     // ตั้งค่าให้ Pipeline ทำงานอัตโนมัติเมื่อมีการ Push ไปที่ GitHub
     triggers {
         githubPush()
