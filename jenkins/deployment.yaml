@@ -1,46 +1,46 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: jenkins
+  name: my-nginx-app # ชื่อนี้ห้ามเปลี่ยน เพราะ Ingress วิ่งมาที่นี่
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: jenkins
+      app: my-purple-web
   template:
     metadata:
       labels:
-        app: jenkins
+        app: my-purple-web
     spec:
       securityContext:
-        runAsUser: 0      # รัน Pod เป็น root (เพื่อให้มีสิทธิ์จัดการไฟล์ระบบ)
-        runAsGroup: 0     # รันกลุ่มเป็น root
-        fsGroup: 0        # ให้สิทธิ์กลุ่มไฟล์เป็น root
-        
-      initContainers:
-      - name: fix-permissions
-        image: nginx:alpine
-        command: ["sh", "-c", "chown -R 1000:1000 /var/jenkins_home"]
-        volumeMounts:
-        - name: jenkins-storage
-          mountPath: /var/jenkins_home
-
+        runAsUser: 0
       containers:
-      - name: jenkins
-        image: jenkins/jenkins:lts
+      - name: nginx-container # ชื่อคอนเทนเนอร์
+        image: my-nginx-web:latest
+        # --- เพิ่มส่วนนี้เข้าไปเพื่อให้แก้ Git และลง kubectl อัตโนมัติ ---
+        lifecycle:
+          postStart:
+            exec:
+              command: 
+              - /bin/sh
+              - -c
+              - |
+                git config --system --add safe.directory '*'
+                if [ ! -f /usr/local/bin/kubectl ]; then
+                  curl -LO https://dl.k8s.io/release/v1.29.3/bin/linux/amd64/kubectl
+                  chmod +x kubectl
+                  mv kubectl /usr/local/bin/
+                fi
+        # -----------------------------------------------------------
+        env:
+        - name: DOCKER_HOST
+          value: "tcp://host.docker.internal:2375"
         ports:
         - containerPort: 8080
-        - containerPort: 50000
         volumeMounts:
         - name: jenkins-storage
           mountPath: /var/jenkins_home
-        - name: docker-sock
-          mountPath: /var/run/docker.sock
-      
       volumes:
       - name: jenkins-storage
         persistentVolumeClaim:
           claimName: jenkins-pvc
-      - name: docker-sock
-        hostPath:
-          path: /var/run/docker.sock # สำหรับ Docker Desktop บน Windows/Linux
