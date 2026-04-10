@@ -13,13 +13,24 @@ spec:
         app: jenkins
     spec:
       securityContext:
-        fsGroup: 1000  # แก้ปัญหา Permission ของ Volume
+        fsGroup: 1000
+        
+      # --- InitContainer ---
+      initContainers:
+      - name: fix-permissions
+        image: nginx:alpine  # <--- เปลี่ยนจาก busybox เป็น nginx:alpine
+        command: ["sh", "-c", "chown -R 1000:1000 /var/jenkins_home"]
+        volumeMounts:
+        - name: jenkins-storage
+          mountPath: /var/jenkins_home
+
       containers:
       - name: jenkins
         image: jenkins/jenkins:lts
         ports:
         - containerPort: 8080
-        - containerPort: 50000 # สำหรับให้ Jenkins Agent เชื่อมต่อกลับมา
+        - containerPort: 50000
+        # (แนะนำ) กำหนด Resource ป้องกัน Jenkins กิน RAM เครื่องหมด
         resources:
           limits:
             cpu: "1"
