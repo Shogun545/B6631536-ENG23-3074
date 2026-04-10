@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     tools {
-        docker 'docker' 
+        dockerTool 'docker'
     }
 
     // ตั้งค่าให้ Pipeline ทำงานอัตโนมัติเมื่อมีการ Push ไปที่ GitHub
