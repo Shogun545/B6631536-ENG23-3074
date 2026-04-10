@@ -13,7 +13,9 @@ spec:
         app: jenkins
     spec:
       securityContext:
-        runAsUser: 0 # ต้องเป็น root เพื่อคุยกับ docker.sock ได้
+        runAsUser: 0      # รัน Pod เป็น root (เพื่อให้มีสิทธิ์จัดการไฟล์ระบบ)
+        runAsGroup: 0     # รันกลุ่มเป็น root
+        fsGroup: 0        # ให้สิทธิ์กลุ่มไฟล์เป็น root
         
       initContainers:
       - name: fix-permissions
