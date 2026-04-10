@@ -1,19 +1,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: my-nginx-app # แยกชื่อออกมาให้ชัดเจน
+  name: my-nginx-app # ชื่อชิ้นงาน แยกคนละชื่อกับ jenkins
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
-      app: my-nginx-web
+      app: my-purple-web
   template:
     metadata:
       labels:
-        app: my-nginx-web
+        app: my-purple-web
     spec:
       containers:
       - name: nginx-container
-        image: my-nginx-web:latest # อิมเมจที่เรา build จาก Jenkins
+        image: my-nginx-web:latest
         ports:
         - containerPort: 80

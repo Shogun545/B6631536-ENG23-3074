@@ -1,23 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: my-nginx-app # ชื่อนี้ห้ามเปลี่ยน เพราะ Ingress วิ่งมาที่นี่
+  name: jenkins # ชื่อนี้คือตัว Jenkins
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: my-purple-web
+      app: jenkins
   template:
     metadata:
       labels:
-        app: my-purple-web
+        app: jenkins
     spec:
       securityContext:
         runAsUser: 0
       containers:
-      - name: nginx-container # ชื่อคอนเทนเนอร์
-        image: my-nginx-web:latest
-        # --- เพิ่มส่วนนี้เข้าไปเพื่อให้แก้ Git และลง kubectl อัตโนมัติ ---
+      - name: jenkins
+        image: jenkins/jenkins:lts
         lifecycle:
           postStart:
             exec:
@@ -31,7 +30,6 @@ spec:
                   chmod +x kubectl
                   mv kubectl /usr/local/bin/
                 fi
-        # -----------------------------------------------------------
         env:
         - name: DOCKER_HOST
           value: "tcp://host.docker.internal:2375"
